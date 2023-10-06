@@ -55,7 +55,7 @@ contract OracleSwapTest is Test {
             100000 * 10 ** 18
         );
         quoteToken = new ERC20Mock(
-            "Qoute token",
+            "Quote token",
             "QUT",
             QUOTE_TOKEN_MINT,
             100000 * 10 ** 18
