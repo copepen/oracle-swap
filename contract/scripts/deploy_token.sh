@@ -7,7 +7,7 @@
 RPC_URL=https://rpc.ankr.com/polygon_mumbai
 
 # Private key of deployer account
-DEPLOYER_PRIVATE_KEY="b29c95306899b54f317f3e534e0ba5899435414c1bcfa7bcafee68ddf25f81ee"
+DEPLOYER_PRIVATE_KEY=""
 
 ETHERSCAN_API_KEY="TCXB1BR4188DIYH6GFDEYGP3F3S9QRNVPY"
 
