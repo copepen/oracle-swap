@@ -15,6 +15,7 @@ export interface ExchangeRateMeta {
 export interface ChainState {
   accountBaseBalance: BigNumber
   accountQuoteBalance: BigNumber
+  accountLpBalance: BigNumber
   poolBaseBalance: BigNumber
   poolQuoteBalance: BigNumber
 }
@@ -39,7 +40,7 @@ export function timeAgo(diff: number): string {
  */
 export function numberToTokenQty(x: number | string, decimals: number): BigNumber {
   if (typeof x == "string") {
-    x = Number.parseFloat(x)
+    x = Number.parseFloat(x) || 0
   }
   return BigNumber.from(Math.floor(x * 1000000)).mul(BigNumber.from(10).pow(decimals - 6))
 }

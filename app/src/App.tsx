@@ -5,11 +5,12 @@ import {useMetaMask} from "metamask-react"
 import Web3 from "web3"
 import {ChainState, ExchangeRateMeta, tokenQtyToNumber} from "./utils"
 import {OrderEntry} from "./OrderEntry"
+import {AddOrRemoveLiquidity} from "./AddOrRemoveLiquidity"
 import {PriceText} from "./PriceText"
 import {MintButton} from "./MintButton"
 import {getBalance} from "./erc20"
 
-const CONFIG = {
+const CONFIG_OLD = {
   // Each token is configured with its ERC20 contract address and Pyth Price Feed ID.
   // You can find the list of price feed ids at https://pyth.network/developers/price-feed-ids
   // Note that feeds have different ids on testnet / mainnet.
@@ -31,7 +32,38 @@ const CONFIG = {
   mintQty: 100,
 }
 
+const CONFIG = {
+  // Each token is configured with its ERC20 contract address and Pyth Price Feed ID.
+  // You can find the list of price feed ids at https://pyth.network/developers/price-feed-ids
+  // Note that feeds have different ids on testnet / mainnet.
+  baseToken: {
+    name: "BRL",
+    erc20Address: "0x6114446F40b1470095C999865a1a8bF98C649c56",
+    pythPriceFeedId: "08f781a893bc9340140c5f89c8a96f438bcfae4d1474cc0f688e3a52892c7318",
+    decimals: 18,
+  },
+  quoteToken: {
+    name: "USD",
+    erc20Address: "0x4dF5E254b96A9F4CaCB1eb5eE843931A1a9e191b",
+    pythPriceFeedId: "1fc18861232290221461220bd4e2acd1dcdfbc89c84092c93c18bdc7756c1588",
+    decimals: 18,
+  },
+  lpToken: {
+    name: "OSLP",
+    erc20Address: "0x4A27A445C76D921C2D6970C15C7fE459E0C8ac3f",
+    pythPriceFeedId: "",
+    decimals: 18,
+  },
+  swapContractAddress: "0xf50e5b2b1037f9ab7b4f4efe3dbed5f0caa343bc",
+  swapPairContractAddress: "0x4A27A445C76D921C2D6970C15C7fE459E0C8ac3f",
+  pythContractAddress: "0xff1a0f4744e8582DF1aE09D5611b887B6a12925C",
+  priceServiceUrl: "https://xc-testnet.pyth.network",
+  mintQty: 1000000,
+}
+
 function App() {
+  const [isBuy, setIsBuy] = useState<boolean>(true)
+
   const {status, connect, account, ethereum} = useMetaMask()
 
   const [web3, setWeb3] = useState<Web3 | undefined>(undefined)
@@ -50,8 +82,9 @@ function App() {
         setChainState({
           accountBaseBalance: await getBalance(web3, CONFIG.baseToken.erc20Address, account),
           accountQuoteBalance: await getBalance(web3, CONFIG.quoteToken.erc20Address, account),
-          poolBaseBalance: await getBalance(web3, CONFIG.baseToken.erc20Address, CONFIG.swapContractAddress),
-          poolQuoteBalance: await getBalance(web3, CONFIG.quoteToken.erc20Address, CONFIG.swapContractAddress),
+          accountLpBalance: await getBalance(web3, CONFIG.lpToken.erc20Address, account),
+          poolBaseBalance: await getBalance(web3, CONFIG.baseToken.erc20Address, CONFIG.swapPairContractAddress),
+          poolQuoteBalance: await getBalance(web3, CONFIG.quoteToken.erc20Address, CONFIG.swapPairContractAddress),
         })
       } else {
         setChainState(undefined)
@@ -114,11 +147,9 @@ function App() {
     }
   }, [])
 
-  const [isBuy, setIsBuy] = useState<boolean>(true)
-
   return (
-    <div className="App">
-      <div className="control-panel">
+    <div className="App" style={{justifyContent: "center"}}>
+      <div className="control-panel" style={{padding: "20px 20px"}}>
         <h3>Control Panel</h3>
 
         <div>
@@ -177,25 +208,9 @@ function App() {
             <div>
               <p>
                 {tokenQtyToNumber(chainState.poolBaseBalance, CONFIG.baseToken.decimals)} {CONFIG.baseToken.name}
-                <MintButton
-                  web3={web3!}
-                  sender={account!}
-                  erc20Address={CONFIG.baseToken.erc20Address}
-                  destination={CONFIG.swapContractAddress}
-                  qty={CONFIG.mintQty}
-                  decimals={CONFIG.baseToken.decimals}
-                />
               </p>
               <p>
                 {tokenQtyToNumber(chainState.poolQuoteBalance, CONFIG.quoteToken.decimals)} {CONFIG.quoteToken.name}
-                <MintButton
-                  web3={web3!}
-                  sender={account!}
-                  erc20Address={CONFIG.quoteToken.erc20Address}
-                  destination={CONFIG.swapContractAddress}
-                  qty={CONFIG.mintQty}
-                  decimals={CONFIG.quoteToken.decimals}
-                />
               </p>
             </div>
           ) : (
@@ -203,38 +218,70 @@ function App() {
           )}
         </div>
       </div>
-
-      <div className={"main"}>
-        <h3>
-          Swap between {CONFIG.baseToken.name} and {CONFIG.quoteToken.name}
-        </h3>
-        <PriceText
-          price={pythOffChainPrice}
-          currentTime={time}
-          rate={exchangeRateMeta}
-          baseToken={CONFIG.baseToken}
-          quoteToken={CONFIG.quoteToken}
-        />
-        <div className="tab-header">
-          <div className={`tab-item ${isBuy ? "active" : ""}`} onClick={() => setIsBuy(true)}>
-            Buy
-          </div>
-          <div className={`tab-item ${!isBuy ? "active" : ""}`} onClick={() => setIsBuy(false)}>
-            Sell
-          </div>
-        </div>
-        <div className="tab-content">
-          <OrderEntry
+      <div style={{padding: "0px 20px"}}>
+        <div style={{display: "flex", gap: "20px"}}>
+          {/* add/remove liquidity with base token */}
+          <AddOrRemoveLiquidity
             web3={web3}
             account={account}
-            isBuy={isBuy}
-            approxPrice={exchangeRateMeta?.rate}
+            underlyingToken={CONFIG.baseToken}
+            lpToken={CONFIG.lpToken}
             baseToken={CONFIG.baseToken}
             quoteToken={CONFIG.quoteToken}
             priceServiceUrl={CONFIG.priceServiceUrl}
             pythContractAddress={CONFIG.pythContractAddress}
             swapContractAddress={CONFIG.swapContractAddress}
+            chainState={chainState}
           />
+
+          {/* add/remove liquidity with quote token */}
+          <AddOrRemoveLiquidity
+            web3={web3}
+            account={account}
+            underlyingToken={CONFIG.quoteToken}
+            lpToken={CONFIG.lpToken}
+            baseToken={CONFIG.baseToken}
+            quoteToken={CONFIG.quoteToken}
+            priceServiceUrl={CONFIG.priceServiceUrl}
+            pythContractAddress={CONFIG.pythContractAddress}
+            swapContractAddress={CONFIG.swapContractAddress}
+            chainState={chainState}
+          />
+        </div>
+
+        {/* swap between base/quote tokens */}
+        <div>
+          <h3>
+            Swap between {CONFIG.baseToken.name} and {CONFIG.quoteToken.name}
+          </h3>
+          <PriceText
+            price={pythOffChainPrice}
+            currentTime={time}
+            rate={exchangeRateMeta}
+            baseToken={CONFIG.baseToken}
+            quoteToken={CONFIG.quoteToken}
+          />
+          <div className="tab-header">
+            <div className={`tab-item ${isBuy ? "active" : ""}`} onClick={() => setIsBuy(true)}>
+              Buy
+            </div>
+            <div className={`tab-item ${!isBuy ? "active" : ""}`} onClick={() => setIsBuy(false)}>
+              Sell
+            </div>
+          </div>
+          <div className="tab-content">
+            <OrderEntry
+              web3={web3}
+              account={account}
+              isBuy={isBuy}
+              approxPrice={exchangeRateMeta?.rate}
+              baseToken={CONFIG.baseToken}
+              quoteToken={CONFIG.quoteToken}
+              priceServiceUrl={CONFIG.priceServiceUrl}
+              pythContractAddress={CONFIG.pythContractAddress}
+              swapContractAddress={CONFIG.swapContractAddress}
+            />
+          </div>
         </div>
       </div>
     </div>

@@ -1,31 +1,11 @@
 [
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_pyth",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "_baseTokenPriceId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "_quoteTokenPriceId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "address",
-        "name": "_baseToken",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_quoteToken",
-        "type": "address"
-      }
+      {"internalType": "address", "name": "pyth_", "type": "address"},
+      {"internalType": "bytes32", "name": "baseTokenPriceId_", "type": "bytes32"},
+      {"internalType": "bytes32", "name": "quoteTokenPriceId_", "type": "bytes32"},
+      {"internalType": "address", "name": "baseToken_", "type": "address"},
+      {"internalType": "address", "name": "quoteToken_", "type": "address"}
     ],
     "stateMutability": "nonpayable",
     "type": "constructor"
@@ -33,108 +13,115 @@
   {
     "anonymous": false,
     "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amountUsd",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amountWei",
-        "type": "uint256"
-      }
+      {"indexed": true, "internalType": "address", "name": "user", "type": "address"},
+      {"indexed": false, "internalType": "address", "name": "tokenIn", "type": "address"},
+      {"indexed": false, "internalType": "uint256", "name": "amountIn", "type": "uint256"},
+      {"indexed": false, "internalType": "uint256", "name": "timestamp", "type": "uint256"}
     ],
-    "name": "Transfer",
+    "name": "AddLiquidity",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {"indexed": true, "internalType": "address", "name": "user", "type": "address"},
+      {"indexed": false, "internalType": "address", "name": "lpToken", "type": "address"},
+      {"indexed": false, "internalType": "uint256", "name": "timestamp", "type": "uint256"}
+    ],
+    "name": "LpTokenUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {"indexed": true, "internalType": "address", "name": "previousOwner", "type": "address"},
+      {"indexed": true, "internalType": "address", "name": "newOwner", "type": "address"}
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {"indexed": true, "internalType": "address", "name": "user", "type": "address"},
+      {"indexed": false, "internalType": "address", "name": "tokenOut", "type": "address"},
+      {"indexed": false, "internalType": "uint256", "name": "amountOut", "type": "uint256"},
+      {"indexed": false, "internalType": "uint256", "name": "timestamp", "type": "uint256"}
+    ],
+    "name": "RemoveLiquidity",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {"indexed": true, "internalType": "address", "name": "sender", "type": "address"},
+      {"indexed": false, "internalType": "uint256", "name": "tokenIn", "type": "uint256"},
+      {"indexed": false, "internalType": "uint256", "name": "tokenOut", "type": "uint256"},
+      {"indexed": false, "internalType": "uint256", "name": "amounIn", "type": "uint256"},
+      {"indexed": false, "internalType": "uint256", "name": "amountOut", "type": "uint256"}
+    ],
+    "name": "Swap",
     "type": "event"
   },
   {
     "inputs": [],
-    "name": "baseBalance",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "name": "BASE_SWAP_FEE",
+    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "MAX_SWAP_FEE",
+    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "address", "name": "inTokenAddress", "type": "address"},
+      {"internalType": "uint256", "name": "inTokenAmount", "type": "uint256"},
+      {"internalType": "bytes[]", "name": "pythUpdateData", "type": "bytes[]"}
+    ],
+    "name": "addLiquidity",
+    "outputs": [],
+    "stateMutability": "payable",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "baseToken",
-    "outputs": [
-      {
-        "internalType": "contract ERC20",
-        "name": "",
-        "type": "address"
-      }
-    ],
+    "outputs": [{"internalType": "address", "name": "", "type": "address"}],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
-    "name": "quoteBalance",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "name": "lpToken",
+    "outputs": [{"internalType": "address", "name": "", "type": "address"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [{"internalType": "address", "name": "", "type": "address"}],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "quoteToken",
-    "outputs": [
-      {
-        "internalType": "contract ERC20",
-        "name": "",
-        "type": "address"
-      }
-    ],
+    "outputs": [{"internalType": "address", "name": "", "type": "address"}],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "_baseTokenPriceId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "_quoteTokenPriceId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "address",
-        "name": "_baseToken",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_quoteToken",
-        "type": "address"
-      }
+      {"internalType": "bytes32", "name": "baseTokenPriceId_", "type": "bytes32"},
+      {"internalType": "bytes32", "name": "quoteTokenPriceId_", "type": "bytes32"},
+      {"internalType": "address", "name": "baseToken_", "type": "address"},
+      {"internalType": "address", "name": "quoteToken_", "type": "address"}
     ],
     "name": "reinitialize",
     "outputs": [],
@@ -143,21 +130,28 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "bool",
-        "name": "isBuy",
-        "type": "bool"
-      },
-      {
-        "internalType": "uint256",
-        "name": "size",
-        "type": "uint256"
-      },
-      {
-        "internalType": "bytes[]",
-        "name": "pythUpdateData",
-        "type": "bytes[]"
-      }
+      {"internalType": "uint256", "name": "lpAmount", "type": "uint256"},
+      {"internalType": "address", "name": "outTokenAddress", "type": "address"},
+      {"internalType": "bytes[]", "name": "pythUpdateData", "type": "bytes[]"}
+    ],
+    "name": "removeLiquidity",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {"inputs": [], "name": "renounceOwnership", "outputs": [], "stateMutability": "nonpayable", "type": "function"},
+  {
+    "inputs": [{"internalType": "address", "name": "lpToken_", "type": "address"}],
+    "name": "setLpToken",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "bool", "name": "isBuy", "type": "bool"},
+      {"internalType": "uint256", "name": "size", "type": "uint256"},
+      {"internalType": "bytes[]", "name": "pythUpdateData", "type": "bytes[]"}
     ],
     "name": "swap",
     "outputs": [],
@@ -165,14 +159,11 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "withdrawAll",
+    "inputs": [{"internalType": "address", "name": "newOwner", "type": "address"}],
+    "name": "transferOwnership",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
-  {
-    "stateMutability": "payable",
-    "type": "receive"
-  }
+  {"stateMutability": "payable", "type": "receive"}
 ]
