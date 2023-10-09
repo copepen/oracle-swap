@@ -9,8 +9,8 @@ RPC_URL=https://rpc.ankr.com/polygon_mumbai
 # Private key of deployer account
 DEPLOYER_PRIVATE_KEY=""
 
-ETHERSCAN_API_KEY="TCXB1BR4188DIYH6GFDEYGP3F3S9QRNVPY"
+ETHERSCAN_API_KEY=""
 
 # Note the -l here uses a ledger wallet to deploy your contract. You may need to change this
 # option if you are using a different wallet.
-forge script DeployMumbai --rpc-url $RPC_URL --broadcast --private-key $DEPLOYER_PRIVATE_KEY --verify --etherscan-api-key $ETHERSCAN_API_KEY --legacy
+forge script DeployTokens --rpc-url $RPC_URL --broadcast --private-key $DEPLOYER_PRIVATE_KEY --verify --etherscan-api-key $ETHERSCAN_API_KEY --legacy
